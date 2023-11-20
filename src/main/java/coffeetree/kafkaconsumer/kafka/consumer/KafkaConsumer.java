@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -20,6 +21,8 @@ public class KafkaConsumer {
 
     Logger LOGGER = LoggerFactory.getLogger(KafkaConsumer.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     @KafkaListener(topics = "coffee", groupId = "coffee-tree", containerFactory = "kafkaListenerContainerFactory")
     public void receiveRecord(ConsumerRecord<String, String> consumerRecord){
         try{
@@ -31,9 +34,12 @@ public class KafkaConsumer {
             String key = consumerRecord.key();
             CoordinateDTO payload = objectMapper.readValue(json, CoordinateDTO.class);
             LOGGER.info("[receive record] {} : {}", key, payload);
+            simpMessagingTemplate.convertAndSend("/topic/container", payload);
         }catch (Exception exception){
             LOGGER.error("[receiveRecord] {} : {}", exception.getClass(), exception.getMessage());
         }
+
+        simpMessagingTemplate.convertAndSend("/topic/container", "FAIL");
 
     }
 }
