@@ -39,7 +39,7 @@ public class KafkaConsumer {
             LOGGER.error("[receiveRecord] {} : {}", exception.getClass(), exception.getMessage());
         }
 
-        simpMessagingTemplate.convertAndSend("/topic/container", "FAIL");
+
 
     }
 }
