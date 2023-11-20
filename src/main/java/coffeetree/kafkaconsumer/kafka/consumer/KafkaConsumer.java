@@ -24,7 +24,7 @@ public class KafkaConsumer {
     public void receiveRecord(ConsumerRecord<String, String> consumerRecord){
         try{
             String encodedMessage = consumerRecord.value().replace("\"", "");
-            LOGGER.info("raw value {} ", encodedMessage);
+            //LOGGER.info("raw value {} ", encodedMessage);
             byte[] decodedMessage = Base64.getDecoder().decode(encodedMessage);
             String json = new String(decodedMessage, StandardCharsets.UTF_8);
 
