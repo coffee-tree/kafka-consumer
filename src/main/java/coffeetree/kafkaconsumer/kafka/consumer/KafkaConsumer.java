@@ -30,6 +30,7 @@ public class KafkaConsumer {
             //LOGGER.info("raw value {} ", encodedMessage);
             byte[] decodedMessage = Base64.getDecoder().decode(encodedMessage);
             String json = new String(decodedMessage, StandardCharsets.UTF_8);
+            json = cleanNullCharacter(json);
 
             String key = consumerRecord.key();
             CoordinateDTO payload = objectMapper.readValue(json, CoordinateDTO.class);
@@ -38,8 +39,12 @@ public class KafkaConsumer {
         }catch (Exception exception){
             LOGGER.error("[receiveRecord] {} : {}", exception.getClass(), exception.getMessage());
         }
+    }
 
-
-
+    private String cleanNullCharacter(String message) {
+        if (message != null && !message.isEmpty() && (message.charAt(0) == '\u0000') && (message.charAt(1) == '+')) {
+            return message.substring(2);
+        }
+        return message;
     }
 }
